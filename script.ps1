@@ -6,9 +6,13 @@ param (
 [switch]$autoImport,
 [switch]$hidden
 )
+##### Parameter entgegennehmen ^ #####
+
 $path = $PSScriptRoot
 function Write-Files(){
-    #Variablen definieren
+    ########## Dateien erstellen Funtkion##########
+
+    # Variablen definieren
     $outpath = "$path\output\"
     $adresse_file = "$outpath\adresse.csv"
     $betreuende_file = "$outpath\betreuende.csv"
@@ -45,8 +49,8 @@ function Write-Files(){
     # Adresse ######################
     Write-Log "Tabelle Adresse wird erstellt..."
     $i = 1
-    foreach ($line in $adresse){
-        $line | Add-Member -NotePropertyName "adresse_id" -NotepropertyValue $i
+    foreach ($line in $adresse){ #Für jede Zeile in der Tabelle "Adresse"
+        $line | Add-Member -NotePropertyName "adresse_id" -NotepropertyValue $i #ID erstellen und hinzufügen (neue Spalte)
         $i++
     }
     # Schuleinheit #################
@@ -91,6 +95,7 @@ function Write-Files(){
             Where-Object {$_.schuleinheit_name -eq $line.schuleinheit_name} | 
             Select-Object -ExpandProperty "schuleinheit_id"
 
+        #Beide IDs hinzufügen
         $line | Add-Member -NotePropertyName "fk_adresse_id" -NotepropertyValue $fk_adresse_id
         $line | Add-Member -NotePropertyName "fk_schuleinheit_id" -NotepropertyValue $fk_schuleinheit_id
     }
@@ -125,11 +130,12 @@ function Write-Files(){
         Where-Object {$_.vorname -eq $line.vorname -and $_.geburtsdatum -eq $line.geburtsdatum -and $_.geschlecht -eq $line.geschlecht -and $_.haus_nr -eq $line.haus_nr -and $_.Haus_Nr_Zusatz -eq $line.haus_nr_zusatz} |
         Select-Object -ExpandProperty "kind_id"
 
+        #fk_adresse_id auslesen
         $fk_adresse_id = $adresse | 
         Where-Object {$_.strasse -eq $line.elt_strasse -and $_.plz -eq $line.elt_plz -and $_.ort -eq $line.elt_ort -and $_.haus_nr -eq $line.elt_haus_nr -and $_.Haus_Nr_Zusatz -eq $line.elt_haus_nr_zusatz} |
         Select-Object -ExpandProperty "adresse_id"
 
-        
+        #fk_elternteil_id auslesen
         $fk_elternteil_id = $elternteil | 
         Where-Object {$_.vorname -eq $line.elt_vorname -and $_.nachname -eq $line.elt_nachname -and $_.geschlecht -eq $line.elt_geschlecht -and $_.fk_adresse_id -eq $fk_adresse_id} |
         Select-Object -ExpandProperty "elternteil_id"
@@ -147,7 +153,7 @@ function Write-Files(){
         $i++
     }
     foreach ($line in $betreuende){
-        #FK_Kita_ID herauslesen
+        #fk_kita_id herauslesen
         $fk_kita_id = $kita | 
             Where-Object {$_.kita_name -eq $line.kita_name} |
             Select-Object -ExpandProperty "kita_id"
@@ -209,30 +215,29 @@ function Write-Files(){
     # Elternteil zu Kind
     $elternteil_zu_kind | Select-Object "elternteil_zu_kind_id","fK_elternteil_id","fk_kind_id" | 
     Export-Csv -Path $elternteil_zu_kind_file -NoTypeInformation -Delimiter ',' -Encoding UTF8
-
     #ConvertTo-Csv -NoTypeInformation -Delimiter ',' | # Convert to CSV string data without the type metadata
     #Select-Object -Skip 1 | # Trim header row, leaving only data columns
     #Out-File -FilePath $elternteil_zu_kind_file -Encoding utf8  
 }
 function Import-ToDatabase(){
-    #$server = "192.168.72.129"
-    #$database = "schule"
-    #$username = "username"
-    #$password = "password"
-    $dataError = $false
+    ########## Import in die Datenbank Funtkion##########
 
-    if ($server -eq ""){ #Daten werden aus FORM ausgelesen
+    $dataError = $false
+    if ($server -eq ""){ 
+        #Daten werden aus dem Form ausgelesen
         $server = $serverNameBox.Text
         $database = $databaseNameBox.Text
         $username = $usernameBox.Text
         $password = $passwordBox.Text
-        if ($server -eq "" -or $database -eq "" -or $username -eq "" -or $password -eq ""){
+        if ($server -eq "" -or $database -eq "" -or $username -eq ""){
+            #Fehlermeldung wenn angaben fehlen
             $MessageBody = "Mindestens ein Feld wurde nicht ausgefuellt"
             [System.Windows.Forms.MessageBox]::Show($MessageBody,"Fehler!",0,[System.Windows.Forms.MessageBoxIcon]::Error)
             $dataError = $true
         }
     }
-    else { #Daten wurden als Parameter übergeben
+    else { 
+        #Daten wurden als Parameter übergeben
         $server = $server
         $database = $datenbank
         $username = $benutzername
@@ -258,67 +263,58 @@ function Import-ToDatabase(){
             }
         }
         else{
-            $ConnectionString = "Server=$server;Port=$port;Database=$database;Uid=$username;Pwd=$password;SslMode=Preferred" 
             try {
-                # load MySQL driver and create connection
                 Write-Log "Datenbank verbindung hergestellt...`r"
-                # You could also could use a direct Link to the DLL File
+                # Direkter Link zur Datei:
                 #$mySQLDataDLL = "$path/lib/MySQL.Data.dll"
                 #[void][system.reflection.Assembly]::LoadFrom($mySQLDataDLL)
-                [void][System.Reflection.Assembly]::LoadWithPartialName("MySql.Data")
+                [void][System.Reflection.Assembly]::LoadWithPartialName("MySql.Data") #Mysql.Data laden (Mysql Connector, welcher installiert sein muss)
+                $ConnectionString = "Server=$server;Port=$port;Database=$database;Uid=$username;Pwd=$password;SslMode=Preferred"  #Connection String erstellen
                 $connection = New-Object MySql.Data.MySqlClient.MySqlConnection
                 $connection.ConnectionString = $ConnectionString
-                $connection.Open()
-                $tables = @("kind","elternteil","betreuende","adresse","elternteil_zu_kind","kita","schuleinheit")
+                $connection.Open() #Verbindung mit Datenbank herstellen
+                $tables = @("kind","elternteil","betreuende","adresse","elternteil_zu_kind","kita","schuleinheit") #Alle Tabellen
                 foreach ($table in $tables){
                     Write-log "$table wird importiert...`r"
     
-                    #Tabelle leeren
+                    #Tabelle leeren --> Delete Query
                     $query = "Delete from $table"
                     $command = New-Object MySql.Data.MySqlClient.MySqlCommand($query, $connection)
                     $dataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($command)
                     $dataSet = New-Object System.Data.DataSet
-                    $recordCount = $dataAdapter.Fill($dataSet, "data")
+                    $recordCount = $dataAdapter.Fill($dataSet, "data") #Anzahl 
                     $dataSet.Tables["data"] | Format-Table
     
-                    #CSV importieren
-                    $query = "
-                    LOAD DATA Local INFILE '$path\output\$table.csv'
-                        INTO TABLE $table
-                        FIELDS TERMINATED BY ','
-                        ENCLOSED BY '`"'
-                        LINES TERMINATED BY '\n'
-                    ;" 
-    
-                    $includesfieldnames = $trueue
-                    $newtablename = $table
-                    $csvfile = "$path\output\$table.csv"
-                    $csvdata = Get-Content -Path $csvfile 
-                    $fieldnames = $csvdata[0].Split(',')
-                    $csvdata = $csvdata | Select-Object -Skip 1
+                    #CSV importieren    
+                    $includesfieldnames = $true #Spaltenüberschriften in der Datei?
+                    $newtablename = $table #Tabellen Name
+                    $csvfile = "$path\output\$table.csv" #Pfad zur Datei
+                    $csvdata = Get-Content -Path $csvfile #CSV-Datei einlesen
+                    $fieldnames = $csvdata[0].Split(',') #Spaltenüberschriften
+                    $csvdata = $csvdata #| Select-Object -Skip 1 #Erste Zeile überspringen
                     
-                    if ($includesfieldnames -eq $true) {$start=1} else {$start=0}
+                    if ($includesfieldnames -eq $true) {$start=1} else {$start=0} #Spaltenüberschriften in der Datei? Wenn ja, erste Zeile weglassen
                     for ($i=$start;$i -le ($csvdata.Count-$start); $i++) {
-                        $insertsql = 'INSERT INTO `'+$newtablename+'` ('
-                        $fieldcount = $fieldnames.Count
+                        $insertsql = 'INSERT INTO `'+$newtablename+'` (' # Sql-Befehl erstellen
+                        $fieldcount = $fieldnames.Count # Anzahl Spalten
                         $commatrack = 1
-                        foreach ($field in $fieldnames) {
+                        foreach ($field in $fieldnames) { # Jede Spalte im Insert Into befehl einfügen
                             $insertsql = $insertsql+$field
-                            $commatrack++
+                            $commatrack++ 
                             if ($commatrack -le $fieldcount) {
-                                $insertsql = $insertsql+','
+                                $insertsql = $insertsql+',' # Wenn es nicht die letzte Spalte ist, ein Komma hinzufügen
                             }
                         }
-                        $insertsql = $insertsql -replace '"','`'
-                        $insertsql = $insertsql+') VALUES ('
+                        $insertsql = $insertsql -replace '"','`' # " mit ` ersetzen
+                        $insertsql = $insertsql+') VALUES (' # Values
                         $commatrack = 1
                         foreach ($itemrow in $csvdata[$i]) {
-                            $item = $itemrow.Split(',')
+                            $item = $itemrow.Split(',') #Zeile aufteilen ben Commas
                             foreach ($data in $item) {
-                                $insertsql = $insertsql+''+$data+''
+                                $insertsql = $insertsql+''+$data+'' # Jede Spalte im Values Teil einfügen
                                 $commatrack++
                                 if ($commatrack -le $fieldcount) {
-                                    $insertsql = $insertsql+','
+                                    $insertsql = $insertsql+',' # Wenn es nicht die letzte Spalte ist, ein Komma hinzufügen
                                 }
                             }
                         }
@@ -336,7 +332,7 @@ function Import-ToDatabase(){
                         }
                     }
                         
-                    #Testen ob es importiert wurde
+                    #Testen ob es importiert wurde --> Durch Select Query
                     $Query = "Select * FROM $table"
                     $command = New-Object MySql.Data.MySqlClient.MySqlCommand($query, $connection)
                     $dataAdapter = New-Object MySql.Data.MySqlClient.MySqlDataAdapter($command)
@@ -344,38 +340,41 @@ function Import-ToDatabase(){
                     $recordCount = $dataAdapter.Fill($dataSet, "data")
                     $dataSet.Tables["data"] | Format-Table
     
-                    Write-Log "Geschriebene Datensaetze $recordCount"
+                    Write-Log "Geschriebene Datensaetze $recordCount" #Anzahl geschriebene Datensätze ausgeben
                 }
                 
             }
             catch {
-                $errormessage = $Error[0]
-                Write-Log "Query konnte nicht ausgeführt werden: $errormessage" 
+                $errormessage = $Error[0] #Error Message speichern
+                Write-Log "Query konnte nicht ausgeführt werden: $errormessage" #Errormessage ausgeben
+                #Error Message als Popup anzeigen
                 $MessageBody = "Es gab folgenden Fehler: $errormessage"
                 [System.Windows.Forms.MessageBox]::Show($MessageBody,"Fehler!",0,[System.Windows.Forms.MessageBoxIcon]::Error)
                 
             }
             Finally {
+                #Connection schliessen, egal ob es einen Fehler gab oder nicht
                 Write-log "Verbindung geschlossen`r"
-                $connection.Close()
+                $connection.Close() #Verbindung mit Datenbank schliessen
             }
     
         }
     }
 }
 
+###### Funktion für das Schreiben des Logs im GUI/Terminal ######
 function Write-Log([string]$text){
-    if ($hidden.IsPresent){
-        Write-Host "$text"
+    if ($hidden.IsPresent){ #Wenn das Script ohne Gui gestartet wurde
+        Write-Host "$text" #In Console schreiben
     }
     else {
-        $logbox.AppendText("$text `r`n")
+        $logbox.AppendText("$text `r`n") #In Textbox im Form schreiben
     }
 }
-if ($hidden.IsPresent){
-    Write-Files
-    if ($autoImport.IsPresent){
-        Import-ToDatabase
+if ($hidden.IsPresent){ #Wenn das Script ohne Gui gestartet wurde
+    Write-Files #CSV-Dateien erstellen
+    if ($autoImport.IsPresent){ #Wenn der Parameter -autoImport verwendet wird
+        Import-ToDatabase #Import in die Datenbank durchführen
     }
 }
 else {
@@ -468,12 +467,12 @@ else {
 
     $form.controls.AddRange(@($serverNameBox,$serverNameLabel,$databaseNameBox,$databaseNameLabel,$usernameBox,$usernameLabel,$passwordBox,$passwordLabel,$startUploadButton,$logbox,$startCreateButton))
     $startCreateButton.Add_Click({
-        $logbox.Text = ""
+        $logbox.Text = "" #Logbox leeren
         Write-Files
     })
     $startUploadButton.Add_Click({  
-        $logbox.Text = ""  
+        $logbox.Text = "" #Logbox leeren
         Import-ToDatabase
     })
-    $form.showDialog()
+    $form.showDialog() #Form anzeigen, sobald alles geladen ist. (Script wird an diesem Punkt angehalten und macht dann hier weiter, sobald das Script geschlossen wurde)
 }
