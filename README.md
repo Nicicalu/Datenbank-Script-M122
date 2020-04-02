@@ -11,7 +11,7 @@ In diesem Readme wird beschrieben, wie das Script funktioniert, was die Vorausse
  - **Direkter Import in die Datenbank (Nur Mysql/MariaDB):** Dafür muss auf dem PC der MYSQL-Connector installiert sein. Dieser wird benötigt, dass das Script eine Verbindung mit der Datenbank herstellen kann. Wenn er nicht installiert ist, werden Sie beim Start des Imports darauf hingewiesen.
  Link: https://dev.mysql.com/downloads/connector/net/
 ## Automatisieren
-Das Script automatisch laufen zu lassen, ist ganz einfach. Muss niemand etwas von Hand machen, sondern das Script erstellt die Dateien und importiert Sie automatisch in die Datenbank. 
+Das Script automatisch laufen zu lassen, ist ganz einfach. Dann muss niemand mehr etwas von Hand machen, sondern das Script erstellt die Dateien und importiert Sie automatisch in die Datenbank. 
 Der Befehl um das Script ohne GUI zu starten ist folgender:
 
     C:\pfad\zu\script\script.ps1 -hidden
