@@ -8,8 +8,8 @@ In diesem Readme wird beschrieben, wie das Script funktioniert, was die Vorausse
 
  - Die Dateien `data1.csv` und `data2.csv` müssen sich im Ordner `src` befinden, welcher eine Stufe unter dem Script im selben Verzeichnis ist z.B. `C:\pfad\zu\script\src\`
  - Die Dateien werden in einem Ordner mit dem Namen "output" ausgegeben. Dieser wird automatisch erstellt, wenn er nicht schon vorhanden ist.
- - **Direkter Import in die Datenbank (Nur Mysql/MariaDB):** Dafür muss auf dem PC der MYSQL-Connector installiert sein. Dieser wird benötigt, dass das Script eine Verbindung mit der Datenbank herstellen kann. Wenn er nicht installiert ist, werden Sie beim Start des Imports darauf hingewiesen. Ausserdem muss der Benutzer, welchen Sie dem Script angeben, auf der Datenbank genügend Rechte haben um die entsprechenden Querys auszuführen (Delete, Insert, Select).
- Link: https://dev.mysql.com/downloads/connector/net/
+ - **Direkter Import in die Datenbank (Nur Mysql/MariaDB):** Dafür muss auf dem PC der MYSQL-Connector installiert sein. Dieser wird benötigt, dass das Script eine Verbindung mit der Datenbank herstellen kann. Wenn er nicht installiert ist, werden Sie beim Start des Imports darauf hingewiesen. Link: https://dev.mysql.com/downloads/connector/net/
+Ausserdem muss der Benutzer, welchen Sie dem Script angeben, auf der Datenbank genügend Rechte haben um die entsprechenden Querys auszuführen (Delete, Insert, Select).
 ## Automatisieren
 Das Script automatisch laufen zu lassen, ist ganz einfach. Dann muss niemand mehr etwas von Hand machen, sondern das Script erstellt die Dateien und importiert Sie automatisch in die Datenbank. 
 Der Befehl um das Script ohne GUI zu starten ist folgender:
