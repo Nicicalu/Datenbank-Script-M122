@@ -25,7 +25,7 @@ Suchen Sie in der Windows-Suche nach `Aufgabenplanung` und öffnen Sie die Aufga
 Drücken Sie mit der rechten Maustaste auf die Aufgabenplanungsbibliothek und wählen Sie `Aufgabe erstellen`.
 ### Trigger konfigurieren
 Geben Sie der Aufgabe im Reiter `Allgemein` einen Namen und wechseln in den Reiter `Trigger`.
-Hier werden Trigger festgelegt. Hier kann man im Dropdown auswählen, dass diese Aufgabe an gewünschten Tagen, beim Start es Computers oder bei einem anderen Event ausgeführt wird. Wählen Sie hier `Nach einem Zeitplan`, wenn das Script jeden Tag oder an spezifischen Tagen ausgeführt werden soll.  
+Hier wird festgelegt, wann die Aufgabe ausgeführt werden soll. Hier kann man im Dropdown auswählen, dass diese Aufgabe an gewünschten Tagen, beim Start es Computers oder bei einem anderen Event ausgeführt wird. Wählen Sie hier `Nach einem Zeitplan`, wenn das Script jeden Tag oder an spezifischen Tagen ausgeführt werden soll.  
 Unten können Sie jetzt auswählen, wann es ausgeführt werden soll. Wählen Sie hier täglich, wöchentlich oder monatlich, wenn das Script mehrere Male ausgeführt werden soll. Auf der rechten Seite können Sie die gewünschte Zeit auswählen, und die Wiederholung konfigurieren.
 ### Aktionen konfigurieren
 Wechseln Sie dann in den Tab `Aktionen`. Hier drücken Sie auf `Neu` um eine neue Aktion zu erstellen. Im Dropdown-Menü wählen Sie `Programm starten`. Im Feld `Programm/Skript` geben Sie `PowerShell` ein.  Bei Argumente geben Sie jetzt die Parameter ein folgendes ein: 
