@@ -41,11 +41,11 @@ Am Ende könnte das dann z.B. so aussehen (Beispiel mit automatischem Import in 
 In den Reitern `Bedingungen` und `Einstellungen` können Sie noch weitere Einstellungen dieser Aufgabe vornehmen. Dies ist aber normalerweise nicht notwendig.
 ## Tests
 Das Script wurde von mir folgendermassen getestet:
-- [x] Die erstellten CSV-Dateien sind korrekt
+- [x] Die erstellten CSV-Dateien sind korrekt --> Da der Import in die DB funktioniert (siehe nächster Punkt)
 - [x] Der Import in eine Datenbank mit MYSQL Workbench und PHPMYADMIN funktioniert (Herr Schneller war während des Tests anwesend. Dieser wurde für gut befunden.)
-- [x] Der automatische Import in eine MYSQL oder MARIADB Datenbank
-- [x] Das Script kann im Hintergrund ausgeführt werden (Parameter `-hidden`)
-- [x] Errror-Handling funktioniert
+- [x] Der automatische Import in eine MYSQL oder MARIADB Datenbank funktioniert --> mit verschiedenen Versionen getestet
+- [x] Das Script kann im Hintergrund ausgeführt werden (Parameter `-hidden`) --> Das Gui wird nicht angezeigt, somit braucht es keine interaktion vom Benutzer
+- [x] Errror-Handling funktioniert --> Viele Fehler die auftreten können werden abgefangen und informieren den Benutzer
 
 ## Weiterführende Links
  - [https://www.deskmodder.de/wiki/index.php/Aufgabenplanung_Aufgabe_erstellen_unter_Windows_10](https://www.deskmodder.de/wiki/index.php/Aufgabenplanung_Aufgabe_erstellen_unter_Windows_10)
