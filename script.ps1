@@ -33,7 +33,7 @@ function Write-Files(){
     $data2 = Import-Csv -Path $csv2 -Delimiter ','
 
     # Aufteilen in verschiedene Variablen
-    $adresse = $data1 | Select-Object "strasse","haus_nr*","plz","ort"
+    $adresse = $data1 | Select-Object "strasse","haus_nr*","plz","ort" -Unique
     $betreuende = $data1 | Select-Object @{N="vorname"; E={$_.betr_vorname}},@{N="nachname"; E={$_.betr_nachname}},@{N="geburtsdatum"; E={$_.betr_geburtsdatum}},@{N="tel_nr"; E={$_.betr_tel_nr}},"kita_name" -Unique | Where-Object {$_.vorname -ne "NULL" -and $_.nachname -ne "NULL" -and $_.geburtsdatum -ne "NULL" -and $_.tel_nr -ne "NULL"}
     $elternteil = $data2 | Select-Object @{N="vorname"; E={$_.elt_vorname}},@{N="nachname"; E={$_.elt_nachname}},@{N="geschlecht"; E={$_.elt_geschlecht}},@{N="strasse"; E={$_.elt_strasse}},@{N="haus_nr"; E={$_.elt_haus_nr}},@{N="haus_nr_zusatz"; E={$_.elt_haus_nr_zusatz}},@{N="plz"; E={$_.elt_plz}},@{N="ort"; E={$_.elt_ort}} -Unique
     $kind = $data2 | Select-Object @{N="vorname"; E={$_.kind_vorname}},@{N="geburtsdatum"; E={$_.kind_geburtsdatum}},@{N="geschlecht"; E={$_.kind_geschlecht}},"kita_name" -Unique | Where-Object {$_.vorname -ne "NULL"}
